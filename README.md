@@ -25,7 +25,7 @@ JavaFX Desktop  ──REST──>  Spring Boot Backend  ──>  PostgreSQL
 
 Pastikan sudah terpasang:
 
-- JDK 26
+- JDK 21
 - Gradle
 - Docker dan Docker Compose
 - Git
