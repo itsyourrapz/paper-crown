@@ -48,7 +48,7 @@ Jalankan semua command dari root repository `paper-crown/`.
 Jalankan perintah Gradle Wrapper terlebih dahulu, lalu pastikan file `gradlew` bisa dieksekusi:
 
 ```bash
-gradle wrapper
+chmod +x gradlew
 ./gradlew --version
 ```
 
