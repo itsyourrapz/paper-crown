@@ -209,7 +209,6 @@ public class PlayView extends VBox {
             }
         }
 
-        RoundDTO round = vm.lastOutcome.isNotNull().get() ? null : null;
         if (vm.lastPlayerMove.get() != null && vm.lastBotMove.get() != null) {
             resultLabel.setText(resultLabel.getText() + " (You: " + vm.lastPlayerMove.get()
                     + " vs Bot: " + vm.lastBotMove.get() + ")");

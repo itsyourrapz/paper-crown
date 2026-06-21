@@ -92,4 +92,16 @@ class GameEngineTest {
         Move second = engine.randomBotMove();
         assertEquals(first, second);
     }
+
+    @Test
+    void rockVsPaperIsLoss() {
+        assertEquals(RoundOutcome.LOSS, engine.resolve(Move.ROCK, Move.PAPER),
+                "Rock vs Paper harus menghasilkan LOSS untuk player");
+    }
+
+    @Test
+    void paperVsRockIsWin() {
+        assertEquals(RoundOutcome.WIN, engine.resolve(Move.PAPER, Move.ROCK),
+                "Paper vs Rock harus menghasilkan WIN untuk player");
+    }
 }
