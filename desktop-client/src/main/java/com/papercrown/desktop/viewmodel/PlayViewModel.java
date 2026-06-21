@@ -100,12 +100,13 @@ public class PlayViewModel {
 
     private void applyResponse(MoveResponse response) {
         currentHp.set(response.getCurrentHp());
-        lastOutcome.set(response.getOutcome());
         runEnded.set(response.isRunEnded());
         finalRun.set(response.getFinalRun());
 
         RoundDTO round = response.getRound();
         if (round != null) {
+            // Update moves BEFORE outcome — lastOutcome listener triggers showResult()
+            // which reads lastPlayerMove/lastBotMove, so they must be current.
             lastPlayerMove.set(round.getPlayerMove());
             lastBotMove.set(round.getBotMove());
             roundNumber.set(round.getRoundNumber());
@@ -114,6 +115,9 @@ public class PlayViewModel {
             history.add(round);
             roundHistory.set(FXCollections.observableArrayList(history));
         }
+
+        // Set outcome LAST so the UI listener sees up-to-date move values
+        lastOutcome.set(response.getOutcome());
 
         buffChoice.set(response.getBuffChoice());
         if (response.getFinalRun() != null) {

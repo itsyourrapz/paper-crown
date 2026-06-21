@@ -85,15 +85,24 @@ public class RunService {
             throw new IllegalStateException("Run is already completed");
         }
 
+        if (playerMove == null) {
+            throw new IllegalArgumentException("Player move cannot be null");
+        }
+
         Move botMove = gameEngine.randomBotMove();
-        RoundOutcome outcome = gameEngine.resolve(playerMove, botMove);
+        RoundOutcome originalOutcome = gameEngine.resolve(playerMove, botMove);
+        RoundOutcome effectiveOutcome = originalOutcome;
 
         run.setRoundNumber(run.getRoundNumber() + 1);
 
-        switch (outcome) {
+        if (effectiveOutcome == RoundOutcome.DRAW && hasDrawAsWin(run)) {
+            consumeDrawAsWin(run);
+            effectiveOutcome = RoundOutcome.WIN;
+        }
+
+        switch (effectiveOutcome) {
             case WIN -> {
                 run.setTotalWins(run.getTotalWins() + 1);
-                healIfDrawAsWin(run);
             }
             case LOSS -> {
                 if (run.getShield() > 0) {
@@ -106,22 +115,20 @@ public class RunService {
                 run.setTotalLosses(run.getTotalLosses() + 1);
             }
             case DRAW -> {
-                if (hasDrawAsWin(run)) {
-                    consumeDrawAsWin(run);
-                    run.setTotalWins(run.getTotalWins() + 1);
-                }
                 run.setTotalDraws(run.getTotalDraws() + 1);
             }
         }
 
-        RoundEntity round = new RoundEntity(run, run.getRoundNumber(), playerMove, botMove, outcome);
+        // Store original outcome in DB so round history shows the true RPS result
+        RoundEntity round = new RoundEntity(run, run.getRoundNumber(), playerMove, botMove, originalOutcome);
         roundRepository.save(round);
         run.getRounds().add(round);
 
         runRepository.save(run);
 
+        // Send effective outcome to client for UI display
         MoveResponse response = new MoveResponse(
-                mapper.toRoundDTO(round), outcome, run.getCurrentHp()
+                mapper.toRoundDTO(round), effectiveOutcome, run.getCurrentHp()
         );
 
         if (run.getCurrentHp() <= 0) {
@@ -196,9 +203,5 @@ public class RunService {
                 });
     }
 
-    private void healIfDrawAsWin(RunEntity run) {
-        if (hasDrawAsWin(run)) {
-            consumeDrawAsWin(run);
-        }
-    }
+
 }
