@@ -46,11 +46,42 @@ public class PlayViewModel {
     public void initialize(Long runId) {
         if (runId == null) return;
         this.runId.set(runId);
+        error.set(false);
         executor.execute(() -> {
             try {
                 RunDTO run = client.getRunById(runId);
                 Platform.runLater(() -> applyRunState(run));
-            } catch (Exception ignored) {}
+            } catch (Exception e) {
+                e.printStackTrace();
+                Platform.runLater(() -> error.set(true));
+            }
+        });
+    }
+
+    public void startNewRun() {
+        loading.set(true);
+        error.set(false);
+        executor.execute(() -> {
+            try {
+                RunDTO run = client.startRun();
+                Platform.runLater(() -> {
+                    // Reset game states for a fresh start
+                    runEnded.set(false);
+                    finalRun.set(null);
+                    buffChoice.set(null);
+                    lastOutcome.set(null);
+                    lastPlayerMove.set(null);
+                    lastBotMove.set(null);
+                    roundHistory.set(FXCollections.observableArrayList());
+                    
+                    applyRunState(run);
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+                Platform.runLater(() -> error.set(true));
+            } finally {
+                Platform.runLater(() -> loading.set(false));
+            }
         });
     }
 
@@ -71,6 +102,7 @@ public class PlayViewModel {
 
     public void selectBuff(Long buffId) {
         loading.set(true);
+        error.set(false);
         executor.execute(() -> {
             try {
                 MoveResponse response = client.selectBuff(runId.get(), buffId);
@@ -78,7 +110,9 @@ public class PlayViewModel {
                     buffChoice.set(null);
                     applyResponse(response);
                 });
-            } catch (Exception ignored) {
+            } catch (Exception e) {
+                e.printStackTrace();
+                Platform.runLater(() -> error.set(true));
             } finally {
                 Platform.runLater(() -> loading.set(false));
             }
@@ -125,5 +159,9 @@ public class PlayViewModel {
                     ? FXCollections.observableArrayList(response.getFinalRun().getActiveBuffs())
                     : FXCollections.observableArrayList());
         }
+    }
+
+    public void shutdown() {
+        executor.shutdown();
     }
 }

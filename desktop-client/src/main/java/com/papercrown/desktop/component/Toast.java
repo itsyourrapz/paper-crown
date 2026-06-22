@@ -20,6 +20,7 @@ public class Toast extends HBox {
         setPadding(new Insets(12, 20, 12, 20));
         setSpacing(10);
         setAlignment(Pos.CENTER_LEFT);
+        setMaxWidth(javafx.scene.layout.Region.USE_PREF_SIZE);
         getStyleClass().add("toast");
 
         FontIcon icon = switch (type) {
