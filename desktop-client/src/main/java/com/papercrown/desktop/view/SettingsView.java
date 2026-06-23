@@ -3,6 +3,7 @@ package com.papercrown.desktop.view;
 import com.papercrown.desktop.service.BackendClient;
 import com.papercrown.desktop.util.AudioManager;
 import com.papercrown.desktop.viewmodel.SettingsViewModel;
+import java.util.function.Consumer;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
@@ -12,14 +13,17 @@ import javafx.scene.layout.VBox;
 import org.kordamp.ikonli.fontawesome5.FontAwesomeSolid;
 import org.kordamp.ikonli.javafx.FontIcon;
 
-import java.util.function.Consumer;
-
 public class SettingsView extends VBox {
 
     private final SettingsViewModel vm;
     private final Consumer<Boolean> onFullscreenToggle;
 
-    public SettingsView(BackendClient client, AudioManager audioManager, Consumer<Boolean> onFullscreenToggle, Consumer<Boolean> onAnimationChanged) {
+    public SettingsView(
+        BackendClient client,
+        AudioManager audioManager,
+        Consumer<Boolean> onFullscreenToggle,
+        Consumer<Boolean> onAnimationChanged
+    ) {
         this.vm = new SettingsViewModel(client, audioManager);
         this.onFullscreenToggle = onFullscreenToggle;
 
@@ -33,18 +37,24 @@ public class SettingsView extends VBox {
         VBox settingsList = new VBox(16);
         settingsList.setMaxWidth(500);
 
-        settingsList.getChildren().addAll(
+        settingsList
+            .getChildren()
+            .addAll(
                 createFullscreenSetting(),
                 createVolumeSetting(),
                 createSoundSetting(),
                 createAnimationSetting(),
                 createExitButton()
-        );
+            );
 
         getChildren().addAll(title, settingsList);
 
-        vm.fullscreen.addListener((obs, old, val) -> onFullscreenToggle.accept(val));
-        vm.animationEnabled.addListener((obs, old, val) -> onAnimationChanged.accept(val));
+        vm.fullscreen.addListener((obs, old, val) ->
+            onFullscreenToggle.accept(val)
+        );
+        vm.animationEnabled.addListener((obs, old, val) ->
+            onAnimationChanged.accept(val)
+        );
 
         vm.load();
     }
@@ -67,10 +77,15 @@ public class SettingsView extends VBox {
         slider.setPrefWidth(200);
         slider.valueProperty().bindBidirectional(vm.masterVolume);
 
-        Label valueLabel = new Label(String.format("%.0f%%", vm.masterVolume.get() * 100));
-        valueLabel.setStyle("-fx-text-fill: #8888a0; -fx-font-size: 13px; -fx-min-width: 40;");
+        Label valueLabel = new Label(
+            String.format("%.0f%%", vm.masterVolume.get() * 100)
+        );
+        valueLabel.setStyle(
+            "-fx-text-fill: #8888a0; -fx-font-size: 13px; -fx-min-width: 40;"
+        );
         vm.masterVolume.addListener((obs, old, val) ->
-                valueLabel.setText(String.format("%.0f%%", val.doubleValue() * 100)));
+            valueLabel.setText(String.format("%.0f%%", val.doubleValue() * 100))
+        );
 
         row.getChildren().addAll(slider, valueLabel);
 
@@ -101,19 +116,11 @@ public class SettingsView extends VBox {
     }
 
     private VBox createExitButton() {
-        FontIcon exitIcon = new FontIcon(FontAwesomeSolid.POWER_OFF);
-        exitIcon.setIconSize(16);
-
-        HBox exitContent = new HBox(8, exitIcon, new Label("Exit Game"));
-        exitContent.setAlignment(Pos.CENTER);
-        exitContent.getChildren().get(1).setStyle("-fx-text-fill: #ffffff; -fx-font-size: 14px; -fx-font-weight: bold;");
-
-        Label exitBtn = new Label();
-        exitBtn.setGraphic(exitContent);
+        Label exitBtn = new Label("Exit Game");
         exitBtn.getStyleClass().add("action-button");
-        exitBtn.setStyle("-fx-background-color: #8b2f3a; -fx-text-fill: #ffffff; -fx-pref-width: 1000; -fx-alignment: center; -fx-cursor: hand; -fx-padding: 12 24; -fx-background-radius: 8px;");
-        exitBtn.setOnMouseEntered(e -> exitBtn.setStyle("-fx-background-color: #a83a46; -fx-text-fill: #ffffff; -fx-pref-width: 1000; -fx-alignment: center; -fx-cursor: hand; -fx-padding: 12 24; -fx-background-radius: 8px;"));
-        exitBtn.setOnMouseExited(e -> exitBtn.setStyle("-fx-background-color: #8b2f3a; -fx-text-fill: #ffffff; -fx-pref-width: 1000; -fx-alignment: center; -fx-cursor: hand; -fx-padding: 12 24; -fx-background-radius: 8px;"));
+        exitBtn.setStyle("-fx-background-color: #8b2f3a; -fx-text-fill: #ffffff; -fx-font-size: 14px; -fx-font-weight: bold; -fx-pref-width: 1000; -fx-alignment: center; -fx-cursor: hand; -fx-padding: 12 24; -fx-background-radius: 8px;");
+        exitBtn.setOnMouseEntered(e -> exitBtn.setStyle("-fx-background-color: #a83a46; -fx-text-fill: #ffffff; -fx-font-size: 14px; -fx-font-weight: bold; -fx-pref-width: 1000; -fx-alignment: center; -fx-cursor: hand; -fx-padding: 12 24; -fx-background-radius: 8px;"));
+        exitBtn.setOnMouseExited(e -> exitBtn.setStyle("-fx-background-color: #8b2f3a; -fx-text-fill: #ffffff; -fx-font-size: 14px; -fx-font-weight: bold; -fx-pref-width: 1000; -fx-alignment: center; -fx-cursor: hand; -fx-padding: 12 24; -fx-background-radius: 8px;"));
         exitBtn.setOnMouseClicked(e -> {
             javafx.application.Platform.exit();
             System.exit(0);
@@ -121,7 +128,7 @@ public class SettingsView extends VBox {
 
         HBox row = new HBox(exitBtn);
         row.setAlignment(Pos.CENTER);
-        row.setPadding(new Insets(32, 0, 0, 0));
+        row.setPadding(new Insets(16, 0, 0, 0));
         HBox.setHgrow(exitBtn, Priority.ALWAYS);
 
         return new VBox(row);
@@ -131,15 +138,19 @@ public class SettingsView extends VBox {
         HBox row = new HBox(16);
         row.setAlignment(Pos.CENTER_LEFT);
         row.setPadding(new Insets(12, 16, 12, 16));
-        row.setStyle("-fx-background-color: #1a1a24; -fx-background-radius: 8; -fx-border-color: #2a2a38; -fx-border-radius: 8;");
+        row.setStyle(
+            "-fx-background-color: #1a1a24; -fx-background-radius: 8; -fx-border-color: #2a2a38; -fx-border-radius: 8;"
+        );
 
-        FontIcon icon = new FontIcon(switch (iconStr) {
-            case "fas-expand" -> FontAwesomeSolid.EXPAND;
-            case "fas-volume-up" -> FontAwesomeSolid.SLIDERS_H;
-            case "fas-music" -> FontAwesomeSolid.BELL;
-            case "fas-sync-alt" -> FontAwesomeSolid.SYNC_ALT;
-            default -> FontAwesomeSolid.COG;
-        });
+        FontIcon icon = new FontIcon(
+            switch (iconStr) {
+                case "fas-expand" -> FontAwesomeSolid.EXPAND;
+                case "fas-volume-up" -> FontAwesomeSolid.SLIDERS_H;
+                case "fas-music" -> FontAwesomeSolid.BELL;
+                case "fas-sync-alt" -> FontAwesomeSolid.SYNC_ALT;
+                default -> FontAwesomeSolid.COG;
+            }
+        );
         icon.setIconSize(18);
         icon.setStyle("-fx-icon-color: #c9a84c;");
 
@@ -150,7 +161,9 @@ public class SettingsView extends VBox {
 
         Label nameLabel = new Label(label);
         nameLabel.setStyle("-fx-text-fill: #d4d4dc; -fx-font-size: 14px;");
-        HBox.setHgrow(nameLabel, Priority.ALWAYS);
+        nameLabel.setMinWidth(100);
+        nameLabel.setPrefWidth(100);
+        nameLabel.setMaxWidth(100);
 
         row.getChildren().addAll(iconBox, nameLabel);
         return row;

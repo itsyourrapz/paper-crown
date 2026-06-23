@@ -117,6 +117,7 @@ public class RunService {
             case LOSS -> {
                 if (run.getShield() > 0) {
                     run.setShield(run.getShield() - 1);
+                    consumeShieldBuff(run);
                 } else if (hasIgnoreLoss(run)) {
                     consumeIgnoreLoss(run);
                 } else {
@@ -141,6 +142,7 @@ public class RunService {
                 mapper.toRoundDTO(round), effectiveOutcome, run.getCurrentHp()
         );
         response.setMaxHp(run.getMaxHp());
+        response.setShield(run.getShield());
         response.setActiveBuffs(run.getRunBuffs().stream()
                 .filter(rb -> !rb.isConsumed())
                 .map(rb -> mapper.toBuffDTO(rb.getBuff()))
@@ -173,6 +175,7 @@ public class RunService {
 
         MoveResponse response = new MoveResponse(null, null, run.getCurrentHp());
         response.setMaxHp(run.getMaxHp());
+        response.setShield(run.getShield());
         response.setActiveBuffs(run.getRunBuffs().stream()
                 .filter(rb -> !rb.isConsumed())
                 .map(rb -> mapper.toBuffDTO(rb.getBuff()))
@@ -229,6 +232,16 @@ public class RunService {
     private void consumeIgnoreLoss(RunEntity run) {
         run.getRunBuffs().stream()
                 .filter(rb -> !rb.isConsumed() && "IGNORE_LOSS".equals(rb.getBuff().getEffectKey()))
+                .findFirst()
+                .ifPresent(rb -> {
+                    rb.setConsumed(true);
+                    rb.setUsedAt(LocalDateTime.now());
+                });
+    }
+
+    private void consumeShieldBuff(RunEntity run) {
+        run.getRunBuffs().stream()
+                .filter(rb -> !rb.isConsumed() && "SHIELD".equals(rb.getBuff().getEffectKey()))
                 .findFirst()
                 .ifPresent(rb -> {
                     rb.setConsumed(true);

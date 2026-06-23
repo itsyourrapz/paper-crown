@@ -8,6 +8,7 @@ public class MoveResponse {
     private RoundOutcome outcome;
     private int currentHp;
     private int maxHp;
+    private int shield;
     private List<BuffDTO> activeBuffs;
     private List<BuffDTO> buffChoice;
     private boolean runEnded;
@@ -29,6 +30,8 @@ public class MoveResponse {
     public void setCurrentHp(int currentHp) { this.currentHp = currentHp; }
     public int getMaxHp() { return maxHp; }
     public void setMaxHp(int maxHp) { this.maxHp = maxHp; }
+    public int getShield() { return shield; }
+    public void setShield(int shield) { this.shield = shield; }
     public List<BuffDTO> getActiveBuffs() { return activeBuffs; }
     public void setActiveBuffs(List<BuffDTO> activeBuffs) { this.activeBuffs = activeBuffs; }
     public List<BuffDTO> getBuffChoice() { return buffChoice; }

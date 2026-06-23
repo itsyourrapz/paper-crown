@@ -59,7 +59,7 @@ public class PlayView extends VBox {
 
         HBox header = new HBox();
         header.setAlignment(Pos.CENTER_LEFT);
-        header.setMaxWidth(600);
+        header.setMaxWidth(1000);
 
         Label title = new Label("Play");
         title.getStyleClass().add("page-title");
@@ -97,14 +97,14 @@ public class PlayView extends VBox {
         hpCard.getStyleClass().add("stat-card");
         hpCard.setPadding(new Insets(20));
         hpCard.setAlignment(Pos.CENTER);
-        hpCard.setMaxWidth(600);
+        hpCard.setMaxWidth(Double.MAX_VALUE);
         hpCard.getChildren().addAll(hpRow, roundInfo);
 
         VBox moveCard = new VBox(20);
         moveCard.getStyleClass().add("stat-card");
         moveCard.setPadding(new Insets(24));
         moveCard.setAlignment(Pos.CENTER);
-        moveCard.setMaxWidth(600);
+        moveCard.setMaxWidth(Double.MAX_VALUE);
 
         Label movePrompt = new Label("Choose your move");
         movePrompt.getStyleClass().add("move-prompt");
@@ -150,20 +150,16 @@ public class PlayView extends VBox {
         resultSection.getStyleClass().add("stat-card");
         resultSection.setPadding(new Insets(20));
         resultSection.setAlignment(Pos.CENTER);
-        resultSection.setMaxWidth(600);
+        resultSection.setMaxWidth(Double.MAX_VALUE);
         resultLabel = new Label("Make a move to begin");
         resultLabel.getStyleClass().add("result-text");
         resultSection.getChildren().add(resultLabel);
-
-        HBox lowerSection = new HBox(16);
-        lowerSection.setAlignment(Pos.TOP_CENTER);
-        lowerSection.setMaxWidth(600);
 
         VBox buffCard = new VBox(12);
         buffCard.getStyleClass().add("stat-card");
         buffCard.setPadding(new Insets(20));
         buffCard.setAlignment(Pos.TOP_CENTER);
-        HBox.setHgrow(buffCard, Priority.ALWAYS);
+        buffCard.setMaxWidth(Double.MAX_VALUE);
 
         Label buffLabel = new Label("Active Buffs");
         buffLabel.getStyleClass().add("section-title");
@@ -178,7 +174,7 @@ public class PlayView extends VBox {
         historyCard.getStyleClass().add("stat-card");
         historyCard.setPadding(new Insets(20));
         historyCard.setAlignment(Pos.TOP_CENTER);
-        HBox.setHgrow(historyCard, Priority.ALWAYS);
+        historyCard.setMaxWidth(Double.MAX_VALUE);
 
         Label historyLabel = new Label("Round History");
         historyLabel.getStyleClass().add("section-title");
@@ -186,7 +182,24 @@ public class PlayView extends VBox {
         historyFeed.setPadding(new Insets(8, 0, 0, 0));
         historyCard.getChildren().addAll(historyLabel, historyFeed);
 
-        lowerSection.getChildren().addAll(buffCard, historyCard);
+        VBox leftColumn = new VBox(24);
+        leftColumn.setAlignment(Pos.TOP_CENTER);
+        HBox.setHgrow(leftColumn, Priority.ALWAYS);
+        leftColumn.getChildren().addAll(hpCard, moveCard, resultSection, buffCard);
+
+        VBox rightColumn = new VBox(24);
+        rightColumn.setAlignment(Pos.TOP_CENTER);
+        rightColumn.setMinWidth(280);
+        rightColumn.setMaxWidth(320);
+        rightColumn.setPrefWidth(300);
+        rightColumn.getChildren().add(historyCard);
+        VBox.setVgrow(historyCard, Priority.ALWAYS);
+
+        HBox columnsContainer = new HBox(24);
+        columnsContainer.setAlignment(Pos.TOP_CENTER);
+        columnsContainer.setMaxWidth(1000);
+        columnsContainer.getChildren().addAll(leftColumn, rightColumn);
+        VBox.setVgrow(columnsContainer, Priority.ALWAYS);
 
         ScrollPane scrollContent = new ScrollPane();
         scrollContent.setFitToWidth(true);
@@ -197,8 +210,13 @@ public class PlayView extends VBox {
         VBox content = new VBox(24);
         content.setPadding(new Insets(32));
         content.setAlignment(Pos.TOP_CENTER);
-        content.getChildren().addAll(header, hpCard, moveCard, resultSection, lowerSection);
-        scrollContent.setContent(content);
+        content.setMaxWidth(1000);
+        content.getChildren().addAll(header, columnsContainer);
+
+        javafx.scene.layout.StackPane centeringWrapper = new javafx.scene.layout.StackPane(content);
+        centeringWrapper.setAlignment(Pos.TOP_CENTER);
+        centeringWrapper.setStyle("-fx-background-color: transparent;");
+        scrollContent.setContent(centeringWrapper);
 
         mainContent.getChildren().add(scrollContent);
 
@@ -242,12 +260,16 @@ public class PlayView extends VBox {
     private void bindViewModel() {
         vm.currentHp.addListener((obs, old, val) -> renderHp(val.intValue(), vm.maxHp.get()));
         vm.maxHp.addListener((obs, old, val) -> renderHp(vm.currentHp.get(), val.intValue()));
+        vm.shield.addListener((obs, old, val) -> renderHp(vm.currentHp.get(), vm.maxHp.get()));
         vm.roundNumber.addListener((obs, old, val) -> roundInfo.setText("Round " + val.intValue()));
         vm.lastOutcome.addListener((obs, old, val) -> {
             if (val != null) showResult(val);
         });
         vm.buffChoice.addListener((obs, old, val) -> showBuffChoice(val));
-        vm.activeBuffs.addListener((obs, old, val) -> updateActiveBuffs(val));
+        vm.activeBuffs.addListener((obs, old, val) -> {
+            updateActiveBuffs(val);
+            renderHp(vm.currentHp.get(), vm.maxHp.get());
+        });
         vm.roundHistory.addListener((obs, old, val) -> updateHistory(val));
         vm.runEnded.addListener((obs, old, val) -> {
             if (val) {
@@ -308,6 +330,14 @@ public class PlayView extends VBox {
             vm.initialize(run.getId());
         });
 
+        // Force-refresh all display after every applyRunState (bypasses JavaFX no-change-no-fire)
+        vm.onRunStateApplied = () -> {
+            renderHp(vm.currentHp.get(), vm.maxHp.get());
+            roundInfo.setText("Round " + vm.roundNumber.get());
+            updateActiveBuffs(vm.activeBuffs.get());
+            updateHistory(vm.roundHistory.get());
+        };
+
         // Initial renders to sync UI with initial VM state
         renderHp(vm.currentHp.get(), vm.maxHp.get());
         roundInfo.setText("Round " + vm.roundNumber.get());
@@ -322,6 +352,22 @@ public class PlayView extends VBox {
             heart.setIconSize(28);
             heart.setIconColor(javafx.scene.paint.Color.web(i < current ? "#e65c6c" : "#323246"));
             hpRow.getChildren().add(heart);
+        }
+        int shieldCount = vm.shield.get();
+        long ignoreLossCount = 0;
+        if (vm.activeBuffs.get() != null) {
+            ignoreLossCount = vm.activeBuffs.get().stream()
+                    .filter(b -> "IGNORE_LOSS".equals(b.getEffectKey()))
+                    .count();
+        }
+        int totalProtection = shieldCount + (int) ignoreLossCount;
+        if (totalProtection > 0) {
+            FontIcon shieldIcon = new FontIcon(org.kordamp.ikonli.fontawesome5.FontAwesomeSolid.SHIELD_ALT);
+            shieldIcon.setIconSize(18);
+            shieldIcon.setIconColor(javafx.scene.paint.Color.web("#c9a84c"));
+            Label countLabel = new Label(String.valueOf(totalProtection));
+            countLabel.setStyle("-fx-text-fill: #c9a84c; -fx-font-size: 14px; -fx-font-weight: bold;");
+            hpRow.getChildren().addAll(shieldIcon, countLabel);
         }
     }
 
