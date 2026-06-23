@@ -45,7 +45,13 @@ public class PlayView extends VBox {
     private VBox startRunOverlay;
     private VBox resumeOrAbandonOverlay;
 
-    public PlayView(BackendClient client, AudioManager audioManager, Long runId, Runnable onNavigateToDashboard, ObservableBooleanValue animationEnabled) {
+    public PlayView(
+        BackendClient client,
+        AudioManager audioManager,
+        Long runId,
+        Runnable onNavigateToDashboard,
+        ObservableBooleanValue animationEnabled
+    ) {
         this.vm = new PlayViewModel(client);
         this.audioManager = audioManager;
         this.onNavigateToDashboard = onNavigateToDashboard;
@@ -59,7 +65,7 @@ public class PlayView extends VBox {
 
         HBox header = new HBox();
         header.setAlignment(Pos.CENTER_LEFT);
-        header.setMaxWidth(600);
+        header.setMaxWidth(1000);
 
         Label title = new Label("Play");
         title.getStyleClass().add("page-title");
@@ -72,12 +78,21 @@ public class PlayView extends VBox {
         leaveBtn.setStyle("-fx-padding: 8 16; -fx-font-size: 13px;");
         leaveBtn.setOnMouseClicked(e -> {
             audioManager.play("click");
-            javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.CONFIRMATION);
-            alert.getDialogPane().getStylesheets().add(getClass().getResource("/styles/main.css").toExternalForm());
+            javafx.scene.control.Alert alert = new javafx.scene.control.Alert(
+                javafx.scene.control.Alert.AlertType.CONFIRMATION
+            );
+            alert
+                .getDialogPane()
+                .getStylesheets()
+                .add(
+                    getClass().getResource("/styles/main.css").toExternalForm()
+                );
             alert.getDialogPane().getStyleClass().add("custom-dialog");
             alert.setTitle("Abandon Run");
             alert.setHeaderText("Are you sure you want to abandon this run?");
-            alert.setContentText("Abandoning will end the current run immediately and record it as a loss. This action cannot be undone.");
+            alert.setContentText(
+                "Abandoning will end the current run immediately and record it as a loss. This action cannot be undone."
+            );
             alert.showAndWait().ifPresent(response -> {
                 if (response == javafx.scene.control.ButtonType.OK) {
                     vm.abandonRun(() -> navigateAway());
@@ -97,14 +112,14 @@ public class PlayView extends VBox {
         hpCard.getStyleClass().add("stat-card");
         hpCard.setPadding(new Insets(20));
         hpCard.setAlignment(Pos.CENTER);
-        hpCard.setMaxWidth(600);
+        hpCard.setMaxWidth(Double.MAX_VALUE);
         hpCard.getChildren().addAll(hpRow, roundInfo);
 
         VBox moveCard = new VBox(20);
         moveCard.getStyleClass().add("stat-card");
         moveCard.setPadding(new Insets(24));
         moveCard.setAlignment(Pos.CENTER);
-        moveCard.setMaxWidth(600);
+        moveCard.setMaxWidth(Double.MAX_VALUE);
 
         Label movePrompt = new Label("Choose your move");
         movePrompt.getStyleClass().add("move-prompt");
@@ -113,7 +128,9 @@ public class PlayView extends VBox {
         moveButtons.setAlignment(Pos.CENTER);
 
         Label rockBtn = new Label("Rock");
-        FontIcon rockIcon = new FontIcon(org.kordamp.ikonli.fontawesome5.FontAwesomeSolid.HAND_ROCK);
+        FontIcon rockIcon = new FontIcon(
+            org.kordamp.ikonli.fontawesome5.FontAwesomeSolid.HAND_ROCK
+        );
         rockIcon.setIconSize(48);
         rockIcon.setIconColor(javafx.scene.paint.Color.web("#d4a06a"));
         rockBtn.setGraphic(rockIcon);
@@ -122,7 +139,9 @@ public class PlayView extends VBox {
         rockBtn.getStyleClass().addAll("move-button", "move-rock");
 
         Label paperBtn = new Label("Paper");
-        FontIcon paperIcon = new FontIcon(org.kordamp.ikonli.fontawesome5.FontAwesomeSolid.HAND_PAPER);
+        FontIcon paperIcon = new FontIcon(
+            org.kordamp.ikonli.fontawesome5.FontAwesomeSolid.HAND_PAPER
+        );
         paperIcon.setIconSize(48);
         paperIcon.setIconColor(javafx.scene.paint.Color.web("#88bdf2"));
         paperBtn.setGraphic(paperIcon);
@@ -131,7 +150,9 @@ public class PlayView extends VBox {
         paperBtn.getStyleClass().addAll("move-button", "move-paper");
 
         Label scissorsBtn = new Label("Scissors");
-        FontIcon scissorsIcon = new FontIcon(org.kordamp.ikonli.fontawesome5.FontAwesomeSolid.HAND_SCISSORS);
+        FontIcon scissorsIcon = new FontIcon(
+            org.kordamp.ikonli.fontawesome5.FontAwesomeSolid.HAND_SCISSORS
+        );
         scissorsIcon.setIconSize(48);
         scissorsIcon.setIconColor(javafx.scene.paint.Color.web("#e88ab9"));
         scissorsBtn.setGraphic(scissorsIcon);
@@ -150,20 +171,16 @@ public class PlayView extends VBox {
         resultSection.getStyleClass().add("stat-card");
         resultSection.setPadding(new Insets(20));
         resultSection.setAlignment(Pos.CENTER);
-        resultSection.setMaxWidth(600);
+        resultSection.setMaxWidth(Double.MAX_VALUE);
         resultLabel = new Label("Make a move to begin");
         resultLabel.getStyleClass().add("result-text");
         resultSection.getChildren().add(resultLabel);
-
-        HBox lowerSection = new HBox(16);
-        lowerSection.setAlignment(Pos.TOP_CENTER);
-        lowerSection.setMaxWidth(600);
 
         VBox buffCard = new VBox(12);
         buffCard.getStyleClass().add("stat-card");
         buffCard.setPadding(new Insets(20));
         buffCard.setAlignment(Pos.TOP_CENTER);
-        HBox.setHgrow(buffCard, Priority.ALWAYS);
+        buffCard.setMaxWidth(Double.MAX_VALUE);
 
         Label buffLabel = new Label("Active Buffs");
         buffLabel.getStyleClass().add("section-title");
@@ -178,7 +195,7 @@ public class PlayView extends VBox {
         historyCard.getStyleClass().add("stat-card");
         historyCard.setPadding(new Insets(20));
         historyCard.setAlignment(Pos.TOP_CENTER);
-        HBox.setHgrow(historyCard, Priority.ALWAYS);
+        historyCard.setMaxWidth(Double.MAX_VALUE);
 
         Label historyLabel = new Label("Round History");
         historyLabel.getStyleClass().add("section-title");
@@ -186,19 +203,46 @@ public class PlayView extends VBox {
         historyFeed.setPadding(new Insets(8, 0, 0, 0));
         historyCard.getChildren().addAll(historyLabel, historyFeed);
 
-        lowerSection.getChildren().addAll(buffCard, historyCard);
+        VBox leftColumn = new VBox(24);
+        leftColumn.setAlignment(Pos.TOP_CENTER);
+        HBox.setHgrow(leftColumn, Priority.ALWAYS);
+        leftColumn
+            .getChildren()
+            .addAll(hpCard, moveCard, resultSection, buffCard);
+
+        VBox rightColumn = new VBox(24);
+        rightColumn.setAlignment(Pos.TOP_CENTER);
+        rightColumn.setMinWidth(280);
+        rightColumn.setMaxWidth(320);
+        rightColumn.setPrefWidth(300);
+        rightColumn.getChildren().add(historyCard);
+        VBox.setVgrow(historyCard, Priority.ALWAYS);
+
+        HBox columnsContainer = new HBox(24);
+        columnsContainer.setAlignment(Pos.TOP_CENTER);
+        columnsContainer.setMaxWidth(1000);
+        columnsContainer.getChildren().addAll(leftColumn, rightColumn);
+        VBox.setVgrow(columnsContainer, Priority.ALWAYS);
 
         ScrollPane scrollContent = new ScrollPane();
         scrollContent.setFitToWidth(true);
         scrollContent.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-        scrollContent.setStyle("-fx-background-color: transparent; -fx-control-inner-background: transparent;");
+        scrollContent.setStyle(
+            "-fx-background-color: transparent; -fx-control-inner-background: transparent;"
+        );
         VBox.setVgrow(scrollContent, Priority.ALWAYS);
 
         VBox content = new VBox(24);
         content.setPadding(new Insets(32));
         content.setAlignment(Pos.TOP_CENTER);
-        content.getChildren().addAll(header, hpCard, moveCard, resultSection, lowerSection);
-        scrollContent.setContent(content);
+        content.setMaxWidth(1000);
+        content.getChildren().addAll(header, columnsContainer);
+
+        javafx.scene.layout.StackPane centeringWrapper =
+            new javafx.scene.layout.StackPane(content);
+        centeringWrapper.setAlignment(Pos.TOP_CENTER);
+        centeringWrapper.setStyle("-fx-background-color: transparent;");
+        scrollContent.setContent(centeringWrapper);
 
         mainContent.getChildren().add(scrollContent);
 
@@ -229,7 +273,15 @@ public class PlayView extends VBox {
             resumeOrAbandonOverlay.setManaged(false);
         }
 
-        rootStack.getChildren().addAll(mainContent, startRunOverlay, resumeOrAbandonOverlay, buffModal, runSummary);
+        rootStack
+            .getChildren()
+            .addAll(
+                mainContent,
+                startRunOverlay,
+                resumeOrAbandonOverlay,
+                buffModal,
+                runSummary
+            );
         VBox.setVgrow(rootStack, Priority.ALWAYS);
 
         getChildren().add(rootStack);
@@ -240,14 +292,26 @@ public class PlayView extends VBox {
     }
 
     private void bindViewModel() {
-        vm.currentHp.addListener((obs, old, val) -> renderHp(val.intValue(), vm.maxHp.get()));
-        vm.maxHp.addListener((obs, old, val) -> renderHp(vm.currentHp.get(), val.intValue()));
-        vm.roundNumber.addListener((obs, old, val) -> roundInfo.setText("Round " + val.intValue()));
+        vm.currentHp.addListener((obs, old, val) ->
+            renderHp(val.intValue(), vm.maxHp.get())
+        );
+        vm.maxHp.addListener((obs, old, val) ->
+            renderHp(vm.currentHp.get(), val.intValue())
+        );
+        vm.shield.addListener((obs, old, val) ->
+            renderHp(vm.currentHp.get(), vm.maxHp.get())
+        );
+        vm.roundNumber.addListener((obs, old, val) ->
+            roundInfo.setText("Round " + val.intValue())
+        );
         vm.lastOutcome.addListener((obs, old, val) -> {
             if (val != null) showResult(val);
         });
         vm.buffChoice.addListener((obs, old, val) -> showBuffChoice(val));
-        vm.activeBuffs.addListener((obs, old, val) -> updateActiveBuffs(val));
+        vm.activeBuffs.addListener((obs, old, val) -> {
+            updateActiveBuffs(val);
+            renderHp(vm.currentHp.get(), vm.maxHp.get());
+        });
         vm.roundHistory.addListener((obs, old, val) -> updateHistory(val));
         vm.runEnded.addListener((obs, old, val) -> {
             if (val) {
@@ -266,7 +330,10 @@ public class PlayView extends VBox {
                 mainContent.setVisible(true);
                 mainContent.setManaged(true);
                 if (animationEnabled.get()) {
-                    FadeTransition ft = new FadeTransition(Duration.millis(300), startRunOverlay);
+                    FadeTransition ft = new FadeTransition(
+                        Duration.millis(300),
+                        startRunOverlay
+                    );
                     ft.setFromValue(1);
                     ft.setToValue(0);
                     ft.setOnFinished(ev -> {
@@ -279,11 +346,18 @@ public class PlayView extends VBox {
                     startRunOverlay.setManaged(false);
                 }
             }
-            if (resumeOrAbandonOverlay.isVisible() && old != null && old.longValue() > 0) {
+            if (
+                resumeOrAbandonOverlay.isVisible() &&
+                old != null &&
+                old.longValue() > 0
+            ) {
                 mainContent.setVisible(true);
                 mainContent.setManaged(true);
                 if (animationEnabled.get()) {
-                    FadeTransition ft = new FadeTransition(Duration.millis(300), resumeOrAbandonOverlay);
+                    FadeTransition ft = new FadeTransition(
+                        Duration.millis(300),
+                        resumeOrAbandonOverlay
+                    );
                     ft.setFromValue(1);
                     ft.setToValue(0);
                     ft.setOnFinished(ev -> {
@@ -308,20 +382,67 @@ public class PlayView extends VBox {
             vm.initialize(run.getId());
         });
 
-        // Initial renders to sync UI with initial VM state
-        renderHp(vm.currentHp.get(), vm.maxHp.get());
-        roundInfo.setText("Round " + vm.roundNumber.get());
-        updateActiveBuffs(vm.activeBuffs.get());
-        updateHistory(vm.roundHistory.get());
+        // Force-refresh all display after every applyRunState (bypasses JavaFX no-change-no-fire)
+        vm.onRunStateApplied = () -> {
+            renderHp(vm.currentHp.get(), vm.maxHp.get());
+            roundInfo.setText("Round " + vm.roundNumber.get());
+            updateActiveBuffs(vm.activeBuffs.get());
+            updateHistory(vm.roundHistory.get());
+        };
+
+        // Automatically shut down the executor when this view is removed from the scene to prevent thread leaks
+        sceneProperty().addListener((obs, oldScene, newScene) -> {
+            if (newScene == null) {
+                vm.shutdown();
+            }
+        });
+
+        // Execute immediately for initial render to sync UI with initial VM state
+        vm.onRunStateApplied.run();
+
+        // Automatically shut down the executor when this view is removed from the scene to prevent thread leaks
+        sceneProperty().addListener((obs, oldScene, newScene) -> {
+            if (newScene == null) {
+                vm.shutdown();
+            }
+        });
     }
 
     private void renderHp(int current, int max) {
         hpRow.getChildren().clear();
         for (int i = 0; i < max; i++) {
-            FontIcon heart = new FontIcon(org.kordamp.ikonli.fontawesome5.FontAwesomeSolid.HEART);
+            FontIcon heart = new FontIcon(
+                org.kordamp.ikonli.fontawesome5.FontAwesomeSolid.HEART
+            );
             heart.setIconSize(28);
-            heart.setIconColor(javafx.scene.paint.Color.web(i < current ? "#e65c6c" : "#323246"));
+            heart.setIconColor(
+                javafx.scene.paint.Color.web(
+                    i < current ? "#e65c6c" : "#323246"
+                )
+            );
             hpRow.getChildren().add(heart);
+        }
+        int shieldCount = vm.shield.get();
+        long ignoreLossCount = 0;
+        if (vm.activeBuffs.get() != null) {
+            ignoreLossCount = vm.activeBuffs
+                .get()
+                .stream()
+                .filter(b -> "IGNORE_LOSS".equals(b.getEffectKey()))
+                .count();
+        }
+        int totalProtection = shieldCount + (int) ignoreLossCount;
+        if (totalProtection > 0) {
+            FontIcon shieldIcon = new FontIcon(
+                org.kordamp.ikonli.fontawesome5.FontAwesomeSolid.SHIELD_ALT
+            );
+            shieldIcon.setIconSize(18);
+            shieldIcon.setIconColor(javafx.scene.paint.Color.web("#c9a84c"));
+            Label countLabel = new Label(String.valueOf(totalProtection));
+            countLabel.setStyle(
+                "-fx-text-fill: #c9a84c; -fx-font-size: 14px; -fx-font-weight: bold;"
+            );
+            hpRow.getChildren().addAll(shieldIcon, countLabel);
         }
     }
 
@@ -329,36 +450,51 @@ public class PlayView extends VBox {
         switch (outcome) {
             case WIN -> {
                 resultLabel.setText("You Win!");
-                resultLabel.getStyleClass().removeAll("result-loss", "result-draw");
+                resultLabel
+                    .getStyleClass()
+                    .removeAll("result-loss", "result-draw");
                 resultLabel.getStyleClass().add("result-win");
                 audioManager.play("win");
                 animateWin();
             }
             case LOSS -> {
                 resultLabel.setText("You Lose!");
-                resultLabel.getStyleClass().removeAll("result-win", "result-draw");
+                resultLabel
+                    .getStyleClass()
+                    .removeAll("result-win", "result-draw");
                 resultLabel.getStyleClass().add("result-loss");
                 audioManager.play("lose");
                 animateLoss();
             }
             case DRAW -> {
                 resultLabel.setText("Draw!");
-                resultLabel.getStyleClass().removeAll("result-win", "result-loss");
+                resultLabel
+                    .getStyleClass()
+                    .removeAll("result-win", "result-loss");
                 resultLabel.getStyleClass().add("result-draw");
                 animateDraw();
             }
         }
 
         if (vm.lastPlayerMove.get() != null && vm.lastBotMove.get() != null) {
-            resultLabel.setText(resultLabel.getText() + " (You: " + vm.lastPlayerMove.get()
-                    + " vs Bot: " + vm.lastBotMove.get() + ")");
+            resultLabel.setText(
+                resultLabel.getText() +
+                    " (You: " +
+                    vm.lastPlayerMove.get() +
+                    " vs Bot: " +
+                    vm.lastBotMove.get() +
+                    ")"
+            );
         }
     }
 
     private void animateWin() {
         if (!animationEnabled.get()) return;
 
-        ScaleTransition st = new ScaleTransition(Duration.millis(300), resultSection);
+        ScaleTransition st = new ScaleTransition(
+            Duration.millis(300),
+            resultSection
+        );
         st.setFromX(1);
         st.setFromY(1);
         st.setToX(1.05);
@@ -368,15 +504,23 @@ public class PlayView extends VBox {
         st.play();
 
         Label plusOne = new Label("+1");
-        plusOne.setStyle("-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #61a5c2;");
+        plusOne.setStyle(
+            "-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #61a5c2;"
+        );
         StackPane.setAlignment(plusOne, Pos.TOP_CENTER);
         StackPane.setMargin(plusOne, new Insets(16, 0, 0, 0));
         rootStack.getChildren().add(plusOne);
 
-        TranslateTransition floatUp = new TranslateTransition(Duration.millis(800), plusOne);
+        TranslateTransition floatUp = new TranslateTransition(
+            Duration.millis(800),
+            plusOne
+        );
         floatUp.setFromY(0);
         floatUp.setToY(-60);
-        FadeTransition fadeOut = new FadeTransition(Duration.millis(800), plusOne);
+        FadeTransition fadeOut = new FadeTransition(
+            Duration.millis(800),
+            plusOne
+        );
         fadeOut.setFromValue(1);
         fadeOut.setToValue(0);
         ParallelTransition floatAnim = new ParallelTransition(floatUp, fadeOut);
@@ -386,14 +530,19 @@ public class PlayView extends VBox {
 
     private void animateLoss() {
         if (!animationEnabled.get()) {
-            resultSection.setStyle("-fx-background-color: rgba(139,47,58,0.3); -fx-background-radius: 12;");
+            resultSection.setStyle(
+                "-fx-background-color: rgba(139,47,58,0.3); -fx-background-radius: 12;"
+            );
             PauseTransition reset = new PauseTransition(Duration.millis(300));
             reset.setOnFinished(e -> resultSection.setStyle(""));
             reset.play();
             return;
         }
 
-        TranslateTransition tt = new TranslateTransition(Duration.millis(50), mainContent);
+        TranslateTransition tt = new TranslateTransition(
+            Duration.millis(50),
+            mainContent
+        );
         tt.setFromX(0);
         tt.setToX(15);
         tt.setAutoReverse(true);
@@ -411,7 +560,9 @@ public class PlayView extends VBox {
         ft.setOnFinished(e -> rootStack.getChildren().remove(flash));
         ft.play();
 
-        resultSection.setStyle("-fx-background-color: rgba(139,47,58,0.3); -fx-background-radius: 12;");
+        resultSection.setStyle(
+            "-fx-background-color: rgba(139,47,58,0.3); -fx-background-radius: 12;"
+        );
         PauseTransition reset = new PauseTransition(Duration.millis(300));
         reset.setOnFinished(e -> resultSection.setStyle(""));
         reset.play();
@@ -421,7 +572,10 @@ public class PlayView extends VBox {
         btn.setOnMouseClicked(e -> {
             audioManager.play("click");
             if (animationEnabled.get()) {
-                ScaleTransition st = new ScaleTransition(Duration.millis(100), btn);
+                ScaleTransition st = new ScaleTransition(
+                    Duration.millis(100),
+                    btn
+                );
                 st.setToX(0.9);
                 st.setToY(0.9);
                 st.setAutoReverse(true);
@@ -435,7 +589,9 @@ public class PlayView extends VBox {
     }
 
     private void animateDraw() {
-        resultSection.setStyle("-fx-background-color: rgba(201,168,76,0.2); -fx-background-radius: 12;");
+        resultSection.setStyle(
+            "-fx-background-color: rgba(201,168,76,0.2); -fx-background-radius: 12;"
+        );
         PauseTransition reset = new PauseTransition(Duration.millis(300));
         reset.setOnFinished(e -> resultSection.setStyle(""));
         reset.play();
@@ -458,7 +614,9 @@ public class PlayView extends VBox {
         cardContainer.setMaxWidth(600);
 
         Label title = new Label("Choose a Buff");
-        title.setStyle("-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #c9a84c; -fx-padding: 0 0 16 0;");
+        title.setStyle(
+            "-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #c9a84c; -fx-padding: 0 0 16 0;"
+        );
 
         HBox cards = new HBox(16);
         cards.setAlignment(Pos.CENTER);
@@ -472,19 +630,28 @@ public class PlayView extends VBox {
             if (animationEnabled.get()) {
                 card.setScaleX(0.8);
                 card.setScaleY(0.8);
-                ScaleTransition st = new ScaleTransition(Duration.millis(200), card);
+                ScaleTransition st = new ScaleTransition(
+                    Duration.millis(200),
+                    card
+                );
                 st.setToX(1);
                 st.setToY(1);
                 st.play();
 
                 card.setOnMouseEntered(e -> {
-                    ScaleTransition hover = new ScaleTransition(Duration.millis(100), card);
+                    ScaleTransition hover = new ScaleTransition(
+                        Duration.millis(100),
+                        card
+                    );
                     hover.setToX(1.05);
                     hover.setToY(1.05);
                     hover.play();
                 });
                 card.setOnMouseExited(e -> {
-                    ScaleTransition unhover = new ScaleTransition(Duration.millis(100), card);
+                    ScaleTransition unhover = new ScaleTransition(
+                        Duration.millis(100),
+                        card
+                    );
                     unhover.setToX(1);
                     unhover.setToY(1);
                     unhover.play();
@@ -520,15 +687,23 @@ public class PlayView extends VBox {
         card.setAlignment(Pos.CENTER);
         card.setMaxWidth(400);
 
-        FontIcon crownIcon = new FontIcon(org.kordamp.ikonli.fontawesome5.FontAwesomeSolid.CROWN);
+        FontIcon crownIcon = new FontIcon(
+            org.kordamp.ikonli.fontawesome5.FontAwesomeSolid.CROWN
+        );
         crownIcon.setIconSize(64);
         crownIcon.setIconColor(javafx.scene.paint.Color.web("#c9a84c"));
 
         Label title = new Label("Begin the Journey");
-        title.setStyle("-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #e8e8f0;");
+        title.setStyle(
+            "-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #e8e8f0;"
+        );
 
-        Label desc = new Label("A new adventure awaits. Draw your cards, challenge the forces, and claim the Paper Crown!");
-        desc.setStyle("-fx-font-size: 14px; -fx-text-fill: #8888a0; -fx-alignment: center;");
+        Label desc = new Label(
+            "A new adventure awaits. Draw your cards, challenge the forces, and claim the Paper Crown!"
+        );
+        desc.setStyle(
+            "-fx-font-size: 14px; -fx-text-fill: #8888a0; -fx-alignment: center;"
+        );
         desc.setWrapText(true);
         desc.setTextAlignment(javafx.scene.text.TextAlignment.CENTER);
 
@@ -558,26 +733,37 @@ public class PlayView extends VBox {
         card.setAlignment(Pos.CENTER);
         card.setMaxWidth(400);
 
-        FontIcon flagIcon = new FontIcon(org.kordamp.ikonli.fontawesome5.FontAwesomeSolid.FLAG);
+        FontIcon flagIcon = new FontIcon(
+            org.kordamp.ikonli.fontawesome5.FontAwesomeSolid.FLAG
+        );
         flagIcon.setIconSize(64);
         flagIcon.setIconColor(javafx.scene.paint.Color.web("#c9a84c"));
 
         Label title = new Label("You have an active run");
-        title.setStyle("-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #e8e8f0;");
+        title.setStyle(
+            "-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #e8e8f0;"
+        );
 
         Label desc = new Label("Continue your current journey or start fresh?");
-        desc.setStyle("-fx-font-size: 14px; -fx-text-fill: #8888a0; -fx-alignment: center;");
+        desc.setStyle(
+            "-fx-font-size: 14px; -fx-text-fill: #8888a0; -fx-alignment: center;"
+        );
         desc.setWrapText(true);
         desc.setTextAlignment(javafx.scene.text.TextAlignment.CENTER);
 
-        javafx.scene.control.Button resumeBtn = new javafx.scene.control.Button("Resume Run");
+        javafx.scene.control.Button resumeBtn = new javafx.scene.control.Button(
+            "Resume Run"
+        );
         resumeBtn.getStyleClass().addAll("action-button", "button-primary");
         resumeBtn.setOnAction(e -> {
             audioManager.play("click");
             mainContent.setVisible(true);
             mainContent.setManaged(true);
             if (animationEnabled.get()) {
-                FadeTransition ft = new FadeTransition(Duration.millis(300), overlay);
+                FadeTransition ft = new FadeTransition(
+                    Duration.millis(300),
+                    overlay
+                );
                 ft.setFromValue(1);
                 ft.setToValue(0);
                 ft.setOnFinished(ev -> {
@@ -591,16 +777,26 @@ public class PlayView extends VBox {
             }
         });
 
-        javafx.scene.control.Button abandonBtn = new javafx.scene.control.Button("Abandon & New Run");
+        javafx.scene.control.Button abandonBtn =
+            new javafx.scene.control.Button("Abandon & New Run");
         abandonBtn.getStyleClass().addAll("action-button", "button-secondary");
         abandonBtn.setOnAction(e -> {
             audioManager.play("click");
-            javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.CONFIRMATION);
-            alert.getDialogPane().getStylesheets().add(getClass().getResource("/styles/main.css").toExternalForm());
+            javafx.scene.control.Alert alert = new javafx.scene.control.Alert(
+                javafx.scene.control.Alert.AlertType.CONFIRMATION
+            );
+            alert
+                .getDialogPane()
+                .getStylesheets()
+                .add(
+                    getClass().getResource("/styles/main.css").toExternalForm()
+                );
             alert.getDialogPane().getStyleClass().add("custom-dialog");
             alert.setTitle("Abandon Run");
             alert.setHeaderText("Are you sure you want to abandon this run?");
-            alert.setContentText("Abandoning will end the current run immediately and record it as a loss. This action cannot be undone.");
+            alert.setContentText(
+                "Abandoning will end the current run immediately and record it as a loss. This action cannot be undone."
+            );
             alert.showAndWait().ifPresent(response -> {
                 if (response == javafx.scene.control.ButtonType.OK) {
                     vm.abandonRun(() -> vm.startNewRun());
@@ -632,13 +828,18 @@ public class PlayView extends VBox {
         if (rounds == null || rounds.isEmpty()) {
             historyFeed.getChildren().add(new Label("No rounds played yet"));
         } else {
-            for (RoundDTO round : rounds) {
+            for (int i = rounds.size() - 1; i >= 0; i--) {
+                RoundDTO round = rounds.get(i);
                 HBox row = new HBox(12);
                 row.setPadding(new Insets(8, 12, 8, 12));
-                row.setStyle("-fx-background-color: #22222e; -fx-background-radius: 8; -fx-border-color: #2a2a38; -fx-border-radius: 8;");
+                row.setStyle(
+                    "-fx-background-color: #22222e; -fx-background-radius: 8; -fx-border-color: #2a2a38; -fx-border-radius: 8;"
+                );
                 row.setAlignment(Pos.CENTER_LEFT);
 
-                org.kordamp.ikonli.Ikon outcomeIcon = switch (round.getOutcome()) {
+                org.kordamp.ikonli.Ikon outcomeIcon = switch (
+                    round.getOutcome()
+                ) {
                     case WIN -> org.kordamp.ikonli.fontawesome5.FontAwesomeSolid.CHECK_CIRCLE;
                     case LOSS -> org.kordamp.ikonli.fontawesome5.FontAwesomeSolid.TIMES_CIRCLE;
                     case DRAW -> org.kordamp.ikonli.fontawesome5.FontAwesomeSolid.MINUS_CIRCLE;
@@ -651,10 +852,21 @@ public class PlayView extends VBox {
 
                 FontIcon iconView = new FontIcon(outcomeIcon);
                 iconView.setIconSize(16);
-                iconView.setIconColor(javafx.scene.paint.Color.web(outcomeColor));
+                iconView.setIconColor(
+                    javafx.scene.paint.Color.web(outcomeColor)
+                );
 
-                Label moveLabel = new Label("R" + round.getRoundNumber() + ": You: " + round.getPlayerMove() + " | Bot: " + round.getBotMove());
-                moveLabel.setStyle("-fx-text-fill: #d4d4dc; -fx-font-size: 13px; -fx-font-weight: bold;");
+                Label moveLabel = new Label(
+                    "R" +
+                        round.getRoundNumber() +
+                        ": You: " +
+                        round.getPlayerMove() +
+                        " | Bot: " +
+                        round.getBotMove()
+                );
+                moveLabel.setStyle(
+                    "-fx-text-fill: #d4d4dc; -fx-font-size: 13px; -fx-font-weight: bold;"
+                );
                 row.getChildren().addAll(iconView, moveLabel);
                 historyFeed.getChildren().add(row);
             }
@@ -675,7 +887,9 @@ public class PlayView extends VBox {
         card.setMaxWidth(400);
 
         Label runOver = new Label("Run Over");
-        runOver.setStyle("-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #e8e8f0;");
+        runOver.setStyle(
+            "-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #e8e8f0;"
+        );
 
         VBox statsBox = new VBox(12);
         statsBox.setAlignment(Pos.CENTER);
@@ -688,7 +902,9 @@ public class PlayView extends VBox {
         lossesLabel.setStyle("-fx-font-size: 16px; -fx-text-fill: #b0b0c8;");
         Label drawsLabel = new Label();
         drawsLabel.setStyle("-fx-font-size: 16px; -fx-text-fill: #b0b0c8;");
-        statsBox.getChildren().addAll(roundsLabel, winsLabel, lossesLabel, drawsLabel);
+        statsBox
+            .getChildren()
+            .addAll(roundsLabel, winsLabel, lossesLabel, drawsLabel);
 
         Button returnBtn = new Button("Return to Dashboard");
         returnBtn.getStyleClass().addAll("action-button", "button-primary");
@@ -717,7 +933,10 @@ public class PlayView extends VBox {
         runSummary.setManaged(true);
         if (animationEnabled.get()) {
             runSummary.setOpacity(0);
-            FadeTransition ft = new FadeTransition(Duration.millis(500), runSummary);
+            FadeTransition ft = new FadeTransition(
+                Duration.millis(500),
+                runSummary
+            );
             ft.setToValue(1);
             ft.play();
         } else {

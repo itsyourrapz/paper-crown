@@ -27,6 +27,7 @@ public class PlayViewModel {
     public final SimpleLongProperty runId = new SimpleLongProperty();
     public final SimpleIntegerProperty currentHp = new SimpleIntegerProperty(3);
     public final SimpleIntegerProperty maxHp = new SimpleIntegerProperty(3);
+    public final SimpleIntegerProperty shield = new SimpleIntegerProperty(0);
     public final SimpleIntegerProperty roundNumber = new SimpleIntegerProperty(0);
     public final SimpleObjectProperty<RoundOutcome> lastOutcome = new SimpleObjectProperty<>();
     public final SimpleObjectProperty<Move> lastPlayerMove = new SimpleObjectProperty<>();
@@ -38,6 +39,8 @@ public class PlayViewModel {
     public final SimpleListProperty<BuffDTO> activeBuffs = new SimpleListProperty<>(FXCollections.observableArrayList());
     public final SimpleBooleanProperty error = new SimpleBooleanProperty(false);
     public final SimpleBooleanProperty loading = new SimpleBooleanProperty(false);
+    // Fires after every applyRunState so PlayView can force-refresh regardless of value equality
+    public Runnable onRunStateApplied = null;
 
     public PlayViewModel(BackendClient client) {
         this.client = client;
@@ -154,6 +157,7 @@ public class PlayViewModel {
         runId.set(run.getId());
         currentHp.set(run.getCurrentHp());
         maxHp.set(run.getMaxHp());
+        shield.set(run.getShield());
         roundNumber.set(run.getRoundNumber());
         activeBuffs.set(run.getActiveBuffs() != null
                 ? FXCollections.observableArrayList(run.getActiveBuffs())
@@ -161,11 +165,13 @@ public class PlayViewModel {
         if (run.getRounds() != null) {
             roundHistory.set(FXCollections.observableArrayList(run.getRounds()));
         }
+        if (onRunStateApplied != null) onRunStateApplied.run();
     }
 
     private void applyResponse(MoveResponse response) {
         currentHp.set(response.getCurrentHp());
         maxHp.set(response.getMaxHp());
+        shield.set(response.getShield());
         runEnded.set(response.isRunEnded());
         finalRun.set(response.getFinalRun());
 
