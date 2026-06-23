@@ -122,6 +122,18 @@ public class DashboardView extends VBox {
                 createStatCard("Best Streak", String.valueOf(stats.getBestStreak()), "blue")
         );
 
+        updateCharts();
+
+        // Update New Run button
+        actions.getChildren().clear();
+        createActionButtons();
+        animateCardEntrance();
+    }
+
+    private void updateCharts() {
+        StatsDTO stats = vm.stats.get();
+        if (stats == null) return;
+
         chartsArea.getChildren().clear();
         FlowPane chartRow = new FlowPane(16, 16);
         chartRow.getChildren().addAll(
@@ -130,11 +142,6 @@ public class DashboardView extends VBox {
                 createRunLengthChart()
         );
         chartsArea.getChildren().add(chartRow);
-
-        // Update New Run button
-        actions.getChildren().clear();
-        createActionButtons();
-        animateCardEntrance();
     }
 
     private VBox createStatCard(String label, String value, String accent) {
@@ -157,7 +164,20 @@ public class DashboardView extends VBox {
         var playBtn = new Label(unfinished != null ? "Abandon & New Run" : "New Run");
         playBtn.getStyleClass().addAll("action-button", unfinished != null ? "button-secondary" : "button-primary");
         playBtn.setOnMouseClicked(e -> { audioManager.play("click"); vm.startNewRun(runId -> {
-            if (runId != null) onNavigateToPlay.accept(runId);
+            if (runId != null) {
+                onNavigateToPlay.accept(runId);
+            } else {
+                var unfinished = vm.unfinishedRun.get();
+                javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.ERROR);
+                alert.getDialogPane().getStylesheets().add(getClass().getResource("/styles/main.css").toExternalForm());
+                alert.getDialogPane().getStyleClass().add("custom-dialog");
+                alert.setTitle("Cannot Start Run");
+                alert.setHeaderText(null);
+                alert.setContentText(unfinished != null
+                        ? "You cannot start a new run while another run is in progress. Please resume or finish your current run."
+                        : "Failed to start a new run. Please check that the backend is running and try again.");
+                alert.showAndWait();
+            }
         }); });
 
         if (unfinished != null) {
@@ -171,6 +191,7 @@ public class DashboardView extends VBox {
     }
 
     private void updateUnfinishedRun(RunDTO run) {
+        actions.getChildren().clear();
         createActionButtons();
     }
 
@@ -183,6 +204,7 @@ public class DashboardView extends VBox {
                 recentRunsArea.getChildren().add(new RunCard(run));
             }
         }
+        updateCharts();
     }
 
     private void updateAchievements(List<com.papercrown.shared.dto.AchievementDTO> achievements) {
