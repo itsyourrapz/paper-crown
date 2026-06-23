@@ -632,7 +632,8 @@ public class PlayView extends VBox {
         if (rounds == null || rounds.isEmpty()) {
             historyFeed.getChildren().add(new Label("No rounds played yet"));
         } else {
-            for (RoundDTO round : rounds) {
+            for (int i = rounds.size() - 1; i >= 0; i--) {
+                RoundDTO round = rounds.get(i);
                 HBox row = new HBox(12);
                 row.setPadding(new Insets(8, 12, 8, 12));
                 row.setStyle("-fx-background-color: #22222e; -fx-background-radius: 8; -fx-border-color: #2a2a38; -fx-border-radius: 8;");

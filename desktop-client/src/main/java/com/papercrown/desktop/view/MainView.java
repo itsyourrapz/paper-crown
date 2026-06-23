@@ -93,6 +93,8 @@ public class MainView extends BorderPane {
 
         Label title = new Label("Paper Crown");
         title.getStyleClass().add("sidebar-title");
+        title.setMaxWidth(Double.MAX_VALUE);
+        title.setAlignment(javafx.geometry.Pos.CENTER);
         VBox.setMargin(title, new Insets(0, 0, 24, 0));
 
         VBox nav = new VBox();

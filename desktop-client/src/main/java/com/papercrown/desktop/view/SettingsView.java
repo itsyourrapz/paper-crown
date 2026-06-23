@@ -24,7 +24,7 @@ public class SettingsView extends VBox {
         this.onFullscreenToggle = onFullscreenToggle;
 
         getStyleClass().add("page-view");
-        setPadding(new Insets(32));
+        setPadding(new Insets(24, 32, 32, 32));
         setSpacing(24);
 
         Label title = new Label("Settings");
@@ -101,9 +101,19 @@ public class SettingsView extends VBox {
     }
 
     private VBox createExitButton() {
-        Label exitBtn = new Label("Exit Game");
-        exitBtn.getStyleClass().addAll("action-button", "button-primary");
-        exitBtn.setStyle("-fx-background-color: #e65c6c; -fx-text-fill: #ffffff; -fx-pref-width: 1000; -fx-alignment: center;");
+        FontIcon exitIcon = new FontIcon(FontAwesomeSolid.POWER_OFF);
+        exitIcon.setIconSize(16);
+
+        HBox exitContent = new HBox(8, exitIcon, new Label("Exit Game"));
+        exitContent.setAlignment(Pos.CENTER);
+        exitContent.getChildren().get(1).setStyle("-fx-text-fill: #ffffff; -fx-font-size: 14px; -fx-font-weight: bold;");
+
+        Label exitBtn = new Label();
+        exitBtn.setGraphic(exitContent);
+        exitBtn.getStyleClass().add("action-button");
+        exitBtn.setStyle("-fx-background-color: #8b2f3a; -fx-text-fill: #ffffff; -fx-pref-width: 1000; -fx-alignment: center; -fx-cursor: hand; -fx-padding: 12 24; -fx-background-radius: 8px;");
+        exitBtn.setOnMouseEntered(e -> exitBtn.setStyle("-fx-background-color: #a83a46; -fx-text-fill: #ffffff; -fx-pref-width: 1000; -fx-alignment: center; -fx-cursor: hand; -fx-padding: 12 24; -fx-background-radius: 8px;"));
+        exitBtn.setOnMouseExited(e -> exitBtn.setStyle("-fx-background-color: #8b2f3a; -fx-text-fill: #ffffff; -fx-pref-width: 1000; -fx-alignment: center; -fx-cursor: hand; -fx-padding: 12 24; -fx-background-radius: 8px;"));
         exitBtn.setOnMouseClicked(e -> {
             javafx.application.Platform.exit();
             System.exit(0);
@@ -113,7 +123,7 @@ public class SettingsView extends VBox {
         row.setAlignment(Pos.CENTER);
         row.setPadding(new Insets(32, 0, 0, 0));
         HBox.setHgrow(exitBtn, Priority.ALWAYS);
-        
+
         return new VBox(row);
     }
 
@@ -125,18 +135,24 @@ public class SettingsView extends VBox {
 
         FontIcon icon = new FontIcon(switch (iconStr) {
             case "fas-expand" -> FontAwesomeSolid.EXPAND;
-            case "fas-volume-up" -> FontAwesomeSolid.VOLUME_UP;
-            case "fas-music" -> FontAwesomeSolid.MUSIC;
+            case "fas-volume-up" -> FontAwesomeSolid.SLIDERS_H;
+            case "fas-music" -> FontAwesomeSolid.BELL;
             case "fas-sync-alt" -> FontAwesomeSolid.SYNC_ALT;
             default -> FontAwesomeSolid.COG;
         });
         icon.setIconSize(18);
+        icon.setStyle("-fx-icon-color: #c9a84c;");
+
+        HBox iconBox = new HBox(icon);
+        iconBox.setAlignment(Pos.CENTER);
+        iconBox.setMinWidth(28);
+        iconBox.setPrefWidth(28);
 
         Label nameLabel = new Label(label);
         nameLabel.setStyle("-fx-text-fill: #d4d4dc; -fx-font-size: 14px;");
         HBox.setHgrow(nameLabel, Priority.ALWAYS);
 
-        row.getChildren().addAll(icon, nameLabel);
+        row.getChildren().addAll(iconBox, nameLabel);
         return row;
     }
 }
