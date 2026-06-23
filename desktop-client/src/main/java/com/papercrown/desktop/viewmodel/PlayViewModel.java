@@ -43,8 +43,23 @@ public class PlayViewModel {
         this.client = client;
     }
 
+    public final SimpleObjectProperty<RunDTO> pendingRun = new SimpleObjectProperty<>();
+
     public void initialize(Long runId) {
-        if (runId == null) return;
+        if (runId == null) {
+            // Entered from sidebar — check for an existing unfinished run first
+            executor.execute(() -> {
+                try {
+                    RunDTO run = client.getUnfinishedRun();
+                    Platform.runLater(() -> {
+                        if (run != null) pendingRun.set(run);
+                    });
+                } catch (Exception e) {
+                    // no unfinished run or network issue — stay on startRunOverlay
+                }
+            });
+            return;
+        }
         this.runId.set(runId);
         error.set(false);
         executor.execute(() -> {
