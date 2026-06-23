@@ -118,9 +118,10 @@ public class SettingsView extends VBox {
     private VBox createExitButton() {
         Label exitBtn = new Label("Exit Game");
         exitBtn.getStyleClass().add("action-button");
-        exitBtn.setStyle("-fx-background-color: #8b2f3a; -fx-text-fill: #ffffff; -fx-font-size: 14px; -fx-font-weight: bold; -fx-pref-width: 1000; -fx-alignment: center; -fx-cursor: hand; -fx-padding: 12 24; -fx-background-radius: 8px;");
-        exitBtn.setOnMouseEntered(e -> exitBtn.setStyle("-fx-background-color: #a83a46; -fx-text-fill: #ffffff; -fx-font-size: 14px; -fx-font-weight: bold; -fx-pref-width: 1000; -fx-alignment: center; -fx-cursor: hand; -fx-padding: 12 24; -fx-background-radius: 8px;"));
-        exitBtn.setOnMouseExited(e -> exitBtn.setStyle("-fx-background-color: #8b2f3a; -fx-text-fill: #ffffff; -fx-font-size: 14px; -fx-font-weight: bold; -fx-pref-width: 1000; -fx-alignment: center; -fx-cursor: hand; -fx-padding: 12 24; -fx-background-radius: 8px;"));
+        String baseStyle = "-fx-background-color: #8b2f3a; -fx-text-fill: #ffffff; -fx-font-size: 14px; -fx-font-weight: bold; -fx-pref-width: 1000; -fx-alignment: center; -fx-cursor: hand; -fx-padding: 12 24; -fx-background-radius: 8px;";
+        exitBtn.setStyle(baseStyle);
+        exitBtn.setOnMouseEntered(e -> exitBtn.setStyle(baseStyle + " -fx-background-color: #a83a46;"));
+        exitBtn.setOnMouseExited(e -> exitBtn.setStyle(baseStyle));
         exitBtn.setOnMouseClicked(e -> {
             javafx.application.Platform.exit();
             System.exit(0);

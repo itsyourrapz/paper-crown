@@ -343,6 +343,13 @@ public class PlayView extends VBox {
         roundInfo.setText("Round " + vm.roundNumber.get());
         updateActiveBuffs(vm.activeBuffs.get());
         updateHistory(vm.roundHistory.get());
+
+        // Automatically shut down the executor when this view is removed from the scene to prevent thread leaks
+        sceneProperty().addListener((obs, oldScene, newScene) -> {
+            if (newScene == null) {
+                vm.shutdown();
+            }
+        });
     }
 
     private void renderHp(int current, int max) {
